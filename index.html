@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <!-- Viewport optimized for iPad touch & no pinch-zoom -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Trò Chơi Lật Ô Tương Tác - Memory Game</title>
+    <title>TrÃ² ChÆ¡i Láº­t Ã” TÆ°Æ¡ng TÃ¡c - Memory Game</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -95,26 +95,26 @@
                     <i class="fa-solid fa-puzzle-piece text-xl"></i>
                 </div>
                 <div>
-                    <h1 id="app-title" class="text-sm sm:text-lg font-bold text-slate-800 leading-tight truncate max-w-[160px] sm:max-w-xs">Lật Ô Tương Tác</h1>
-                    <p id="app-topic" class="text-[11px] sm:text-xs text-emerald-600 font-medium truncate max-w-[160px] sm:max-w-xs">Chủ đề: Tự chọn</p>
+                    <h1 id="app-title" class="text-sm sm:text-lg font-bold text-slate-800 leading-tight truncate max-w-[160px] sm:max-w-xs">Láº­t Ã” TÆ°Æ¡ng TÃ¡c</h1>
+                    <p id="app-topic" class="text-[11px] sm:text-xs text-emerald-600 font-medium truncate max-w-[160px] sm:max-w-xs">Chá»§ Ä‘á»: Tá»± chá»n</p>
                 </div>
             </div>
             
             <!-- Controls Area -->
             <div class="flex items-center gap-2">
-                <!-- Nút TOÀN MÀN HÌNH (Fullscreen Button) -->
+                <!-- NÃºt TOÃ€N MÃ€N HÃŒNH (Fullscreen Button) -->
                 <button id="btn-fullscreen" class="px-3 py-2 bg-slate-800 hover:bg-slate-900 active:scale-95 text-white font-semibold rounded-xl transition text-xs sm:text-sm flex items-center gap-1.5 shadow-md shadow-slate-300">
                     <i id="fullscreen-icon" class="fa-solid fa-expand text-emerald-400"></i>
-                    <span id="fullscreen-text" class="hidden sm:inline">Toàn Màn Hình</span>
+                    <span id="fullscreen-text" class="hidden sm:inline">ToÃ n MÃ n HÃ¬nh</span>
                 </button>
 
-                <!-- Nút chuyển đổi chế độ Học sinh / Giáo viên -->
+                <!-- NÃºt chuyá»ƒn Ä‘á»•i cháº¿ Ä‘á»™ Há»c sinh / GiÃ¡o viÃªn -->
                 <button id="btn-toggle-mode" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-semibold rounded-xl transition text-xs sm:text-sm flex items-center gap-1.5 border border-slate-300">
                     <i id="mode-icon" class="fa-solid fa-user-graduate text-emerald-600"></i>
-                    <span id="mode-text" class="hidden sm:inline">Chế độ Học Sinh</span>
+                    <span id="mode-text" class="hidden sm:inline">Cháº¿ Ä‘á»™ Há»c Sinh</span>
                 </button>
 
-                <!-- Các nút dành riêng cho Giáo viên (Ẩn khi ở Chế độ Học sinh) -->
+                <!-- CÃ¡c nÃºt dÃ nh riÃªng cho GiÃ¡o viÃªn (áº¨n khi á»Ÿ Cháº¿ Ä‘á»™ Há»c sinh) -->
                 <div id="teacher-controls" class="flex items-center gap-2 transition-all">
                     <button id="btn-guide" class="px-3 py-2 bg-amber-50 hover:bg-amber-100 active:scale-95 text-amber-700 font-semibold rounded-xl transition text-xs sm:text-sm flex items-center gap-1.5 border border-amber-200">
                         <i class="fa-solid fa-circle-question"></i>
@@ -122,7 +122,7 @@
                     </button>
                     <button id="btn-admin" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold rounded-xl transition text-xs sm:text-sm flex items-center gap-1.5 shadow-sm shadow-emerald-200">
                         <i class="fa-solid fa-gear"></i>
-                        <span class="hidden md:inline">Cấu Hình</span>
+                        <span class="hidden md:inline">Cáº¥u HÃ¬nh</span>
                     </button>
                 </div>
             </div>
@@ -134,21 +134,21 @@
         <!-- Dashboard Stats -->
         <div class="bg-white/90 backdrop-blur rounded-2xl p-3 sm:p-4 shadow-sm border border-slate-100 mb-4 sm:mb-6 grid grid-cols-4 gap-2 sm:gap-4 text-center">
             <div class="bg-amber-50 border border-amber-100 rounded-xl p-2 sm:p-3">
-                <div class="text-[10px] sm:text-xs font-semibold text-amber-600 uppercase tracking-wider mb-0.5">Điểm Số</div>
+                <div class="text-[10px] sm:text-xs font-semibold text-amber-600 uppercase tracking-wider mb-0.5">Äiá»ƒm Sá»‘</div>
                 <div id="score" class="text-xl sm:text-3xl font-extrabold text-amber-700">0</div>
             </div>
             <div class="bg-blue-50 border border-blue-100 rounded-xl p-2 sm:p-3">
-                <div class="text-[10px] sm:text-xs font-semibold text-blue-600 uppercase tracking-wider mb-0.5">Lượt Lật</div>
+                <div class="text-[10px] sm:text-xs font-semibold text-blue-600 uppercase tracking-wider mb-0.5">LÆ°á»£t Láº­t</div>
                 <div id="flips" class="text-xl sm:text-3xl font-extrabold text-blue-700">0</div>
             </div>
             <div class="bg-purple-50 border border-purple-100 rounded-xl p-2 sm:p-3">
-                <div class="text-[10px] sm:text-xs font-semibold text-purple-600 uppercase tracking-wider mb-0.5">Thời Gian</div>
+                <div class="text-[10px] sm:text-xs font-semibold text-purple-600 uppercase tracking-wider mb-0.5">Thá»i Gian</div>
                 <div id="timer" class="text-xl sm:text-3xl font-extrabold text-purple-700">00:00</div>
             </div>
             <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-1.5 sm:p-2.5 flex flex-col justify-center items-center">
                 <button id="btn-restart" class="w-full h-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold rounded-lg sm:rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm text-xs sm:text-sm">
                     <i class="fa-solid fa-rotate-right"></i>
-                    <span class="hidden sm:inline">Bàn Mới</span>
+                    <span class="hidden sm:inline">BÃ n Má»›i</span>
                 </button>
             </div>
         </div>
@@ -165,26 +165,26 @@
             <div class="w-20 h-20 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto text-4xl mb-4 shadow-inner">
                 <i class="fa-solid fa-trophy"></i>
             </div>
-            <h2 class="text-2xl font-extrabold text-slate-800 mb-1">Xuất Sắc! 🎉</h2>
-            <p class="text-slate-600 text-sm mb-6">Em đã ghép đúng tất cả 9 cặp hình!</p>
+            <h2 class="text-2xl font-extrabold text-slate-800 mb-1">Xuáº¥t Sáº¯c! ðŸŽ‰</h2>
+            <p class="text-slate-600 text-sm mb-6">Em Ä‘Ã£ ghÃ©p Ä‘Ãºng táº¥t cáº£ 9 cáº·p hÃ¬nh!</p>
 
             <div class="bg-slate-50 rounded-2xl p-4 mb-6 grid grid-cols-2 gap-3 text-left">
                 <div>
-                    <span class="text-xs text-slate-400 block">Tổng số điểm</span>
+                    <span class="text-xs text-slate-400 block">Tá»•ng sá»‘ Ä‘iá»ƒm</span>
                     <span id="final-score" class="text-lg font-bold text-amber-600">0</span>
                 </div>
                 <div>
-                    <span class="text-xs text-slate-400 block">Số lượt lật</span>
+                    <span class="text-xs text-slate-400 block">Sá»‘ lÆ°á»£t láº­t</span>
                     <span id="final-flips" class="text-lg font-bold text-blue-600">0</span>
                 </div>
                 <div class="col-span-2 border-t border-slate-200/60 pt-2 mt-1">
-                    <span class="text-xs text-slate-400 block">Thời gian hoàn thành</span>
+                    <span class="text-xs text-slate-400 block">Thá»i gian hoÃ n thÃ nh</span>
                     <span id="final-time" class="text-lg font-bold text-purple-600">00:00</span>
                 </div>
             </div>
 
             <button id="btn-win-restart" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-200 transition active:scale-95">
-                Chơi Bàn Mới
+                ChÆ¡i BÃ n Má»›i
             </button>
         </div>
     </div>
@@ -195,14 +195,14 @@
             <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-xl mb-3">
                 <i class="fa-solid fa-lock"></i>
             </div>
-            <h3 class="text-sm font-bold text-slate-800 mb-1">Mật Khẩu Giáo Viên</h3>
-            <p class="text-[11px] text-slate-500 mb-4">Nhập mật khẩu để mở Cấu Hình (Mặc định: <code class="bg-slate-100 px-1 font-bold">1234</code>)</p>
+            <h3 class="text-sm font-bold text-slate-800 mb-1">Máº­t Kháº©u GiÃ¡o ViÃªn</h3>
+            <p class="text-[11px] text-slate-500 mb-4">Nháº­p máº­t kháº©u Ä‘á»ƒ má»Ÿ Cáº¥u HÃ¬nh (Máº·c Ä‘á»‹nh: <code class="bg-slate-100 px-1 font-bold">1234</code>)</p>
             
-            <input type="password" id="input-password" class="w-full text-center text-sm border border-slate-300 rounded-xl p-2 mb-3 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="••••">
+            <input type="password" id="input-password" class="w-full text-center text-sm border border-slate-300 rounded-xl p-2 mb-3 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="â€¢â€¢â€¢â€¢">
             
             <div class="flex gap-2">
-                <button id="btn-cancel-password" class="w-1/2 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded-xl text-xs">Hủy</button>
-                <button id="btn-confirm-password" class="w-1/2 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-xs">Xác Nhận</button>
+                <button id="btn-cancel-password" class="w-1/2 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded-xl text-xs">Há»§y</button>
+                <button id="btn-confirm-password" class="w-1/2 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-xs">XÃ¡c Nháº­n</button>
             </div>
         </div>
     </div>
@@ -213,8 +213,8 @@
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-sliders text-emerald-600 text-xl"></i>
                     <div>
-                        <h3 class="text-base font-bold text-slate-800">Cấu Hình Bài Học & 9 Cặp Hình</h3>
-                        <p class="text-xs text-slate-500">Tùy chỉnh tiêu đề, ảnh và thiết lập mật khẩu</p>
+                        <h3 class="text-base font-bold text-slate-800">Cáº¥u HÃ¬nh BÃ i Há»c & 9 Cáº·p HÃ¬nh</h3>
+                        <p class="text-xs text-slate-500">TÃ¹y chá»‰nh tiÃªu Ä‘á», áº£nh vÃ  thiáº¿t láº­p máº­t kháº©u</p>
                     </div>
                 </div>
                 <button id="btn-close-admin" class="text-slate-400 hover:text-slate-600 p-1">
@@ -225,41 +225,41 @@
             <div class="py-4 overflow-y-auto space-y-5 flex-1 pr-1">
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tên Trò Chơi</label>
-                        <input type="text" id="input-app-title" class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="VD: Lật Ô Tìm Từ Vựng">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">TÃªn TrÃ² ChÆ¡i</label>
+                        <input type="text" id="input-app-title" class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="VD: Láº­t Ã” TÃ¬m Tá»« Vá»±ng">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Chủ Đề Bài Học</label>
-                        <input type="text" id="input-app-topic" class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="VD: Tiếng Anh Unit 1">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Chá»§ Äá» BÃ i Há»c</label>
+                        <input type="text" id="input-app-topic" class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="VD: Tiáº¿ng Anh Unit 1">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Mật Khẩu Mở Cấu Hình</label>
-                        <input type="text" id="input-teacher-password" class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="Mặc định: 1234">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Máº­t Kháº©u Má»Ÿ Cáº¥u HÃ¬nh</label>
+                        <input type="text" id="input-teacher-password" class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="Máº·c Ä‘á»‹nh: 1234">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-2">Chủ Đề Mẫu Sẵn Có:</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-2">Chá»§ Äá» Máº«u Sáºµn CÃ³:</label>
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                         <button onclick="loadPreset('animals')" class="p-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition">
-                            <i class="fa-solid fa-dog text-emerald-600"></i> Động Vật
+                            <i class="fa-solid fa-dog text-emerald-600"></i> Äá»™ng Váº­t
                         </button>
                         <button onclick="loadPreset('fruits')" class="p-2 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition">
-                            <i class="fa-solid fa-apple-whole text-amber-600"></i> Trái Cây
+                            <i class="fa-solid fa-apple-whole text-amber-600"></i> TrÃ¡i CÃ¢y
                         </button>
                         <button onclick="loadPreset('english')" class="p-2 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-800 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition">
-                            <i class="fa-solid fa-language text-blue-600"></i> Từ Vựng Anh
+                            <i class="fa-solid fa-language text-blue-600"></i> Tá»« Vá»±ng Anh
                         </button>
                         <button onclick="loadPreset('numbers')" class="p-2 bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-800 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition">
-                            <i class="fa-solid fa-arrow-down-1-9 text-purple-600"></i> Chữ & Số
+                            <i class="fa-solid fa-arrow-down-1-9 text-purple-600"></i> Chá»¯ & Sá»‘
                         </button>
                     </div>
                 </div>
 
                 <div>
                     <h4 class="text-xs font-bold text-slate-700 mb-3 flex items-center justify-between">
-                        <span>Danh Sách 9 Cặp Hình (18 Ô)</span>
-                        <span class="text-[11px] font-normal text-slate-500">Tải ảnh từ máy (.png, .jpg) hoặc Dán Link URL</span>
+                        <span>Danh SÃ¡ch 9 Cáº·p HÃ¬nh (18 Ã”)</span>
+                        <span class="text-[11px] font-normal text-slate-500">Táº£i áº£nh tá»« mÃ¡y (.png, .jpg) hoáº·c DÃ¡n Link URL</span>
                     </h4>
 
                     <div id="pair-editors-container" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -268,12 +268,12 @@
                 </div>
 
                 <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200/80">
-                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Mã Cấu Hình JSON (Chia sẻ bài học)</label>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">MÃ£ Cáº¥u HÃ¬nh JSON (Chia sáº» bÃ i há»c)</label>
                     <div class="flex gap-2">
-                        <textarea id="json-code" rows="2" class="w-full text-[11px] font-mono border border-slate-300 rounded-lg p-2 focus:outline-none" placeholder="Dán mã JSON..."></textarea>
+                        <textarea id="json-code" rows="2" class="w-full text-[11px] font-mono border border-slate-300 rounded-lg p-2 focus:outline-none" placeholder="DÃ¡n mÃ£ JSON..."></textarea>
                         <div class="flex flex-col gap-1 shrink-0">
                             <button id="btn-export-json" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-white text-xs font-medium rounded-lg">Copy Code</button>
-                            <button id="btn-import-json" class="px-3 py-1 bg-teal-600 hover:bg-teal-700 text-white text-xs font-medium rounded-lg">Nhập Code</button>
+                            <button id="btn-import-json" class="px-3 py-1 bg-teal-600 hover:bg-teal-700 text-white text-xs font-medium rounded-lg">Nháº­p Code</button>
                         </div>
                     </div>
                 </div>
@@ -282,10 +282,10 @@
 
             <div class="pt-3 border-t border-slate-100 flex justify-between items-center gap-2">
                 <button id="btn-reset-default" class="text-xs text-red-500 hover:text-red-700 font-medium">
-                    <i class="fa-solid fa-rotate-left mr-1"></i>Mặc định
+                    <i class="fa-solid fa-rotate-left mr-1"></i>Máº·c Ä‘á»‹nh
                 </button>
                 <button id="btn-save-admin" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-xs sm:text-sm shadow-md shadow-emerald-200 transition">
-                    <i class="fa-solid fa-check mr-1.5"></i>Lưu & Áp Dụng Bài Học
+                    <i class="fa-solid fa-check mr-1.5"></i>LÆ°u & Ãp Dá»¥ng BÃ i Há»c
                 </button>
             </div>
         </div>
@@ -297,7 +297,7 @@
             <div class="flex justify-between items-center pb-3 border-b border-slate-100 mb-4">
                 <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
                     <i class="fa-brands fa-github text-slate-800 text-xl"></i>
-                    <span>Hướng Dẫn Đăng Lên GitHub Pages</span>
+                    <span>HÆ°á»›ng Dáº«n ÄÄƒng LÃªn GitHub Pages</span>
                 </h3>
                 <button id="btn-close-guide" class="text-slate-400 hover:text-slate-600 p-1">
                     <i class="fa-solid fa-xmark text-xl"></i>
@@ -308,38 +308,38 @@
                 <div class="flex gap-3 items-start">
                     <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center shrink-0">1</span>
                     <div>
-                        <strong class="text-slate-800 block text-sm">Tạo tài khoản GitHub</strong>
-                        Truy cập <a href="https://github.com" target="_blank" class="text-emerald-600 underline font-medium">GitHub.com</a>, đăng ký tài khoản. Chọn **"New repository"**, đặt tên (VD: `game-lat-o`).
+                        <strong class="text-slate-800 block text-sm">Táº¡o tÃ i khoáº£n GitHub</strong>
+                        Truy cáº­p <a href="https://github.com" target="_blank" class="text-emerald-600 underline font-medium">GitHub.com</a>, Ä‘Äƒng kÃ½ tÃ i khoáº£n. Chá»n **"New repository"**, Ä‘áº·t tÃªn (VD: `game-lat-o`).
                     </div>
                 </div>
 
                 <div class="flex gap-3 items-start">
                     <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center shrink-0">2</span>
                     <div>
-                        <strong class="text-slate-800 block text-sm">Tải file index.html lên</strong>
-                        Lưu file HTML này với tên đúng là <code class="bg-slate-100 px-1.5 py-0.5 rounded text-emerald-700 font-mono">index.html</code>. Chọn **Add file -> Upload files**, kéo thả file vào rồi chọn **Commit changes**.
+                        <strong class="text-slate-800 block text-sm">Táº£i file index.html lÃªn</strong>
+                        LÆ°u file HTML nÃ y vá»›i tÃªn Ä‘Ãºng lÃ  <code class="bg-slate-100 px-1.5 py-0.5 rounded text-emerald-700 font-mono">index.html</code>. Chá»n **Add file -> Upload files**, kÃ©o tháº£ file vÃ o rá»“i chá»n **Commit changes**.
                     </div>
                 </div>
 
                 <div class="flex gap-3 items-start">
                     <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center shrink-0">3</span>
                     <div>
-                        <strong class="text-slate-800 block text-sm">Bật GitHub Pages</strong>
-                        Vào **Settings** -> **Pages**. Ở mục Branch chọn **main** (hoặc master) rồi chọn **Save**.
+                        <strong class="text-slate-800 block text-sm">Báº­t GitHub Pages</strong>
+                        VÃ o **Settings** -> **Pages**. á»ž má»¥c Branch chá»n **main** (hoáº·c master) rá»“i chá»n **Save**.
                     </div>
                 </div>
 
                 <div class="flex gap-3 items-start">
                     <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center shrink-0">4</span>
                     <div>
-                        <strong class="text-slate-800 block text-sm">Nhận link game</strong>
-                        Sau 1-2 phút, GitHub sẽ xuất link web chơi game chính thức cho iPad và máy tính!
+                        <strong class="text-slate-800 block text-sm">Nháº­n link game</strong>
+                        Sau 1-2 phÃºt, GitHub sáº½ xuáº¥t link web chÆ¡i game chÃ­nh thá»©c cho iPad vÃ  mÃ¡y tÃ­nh!
                     </div>
                 </div>
             </div>
 
             <button id="btn-understand-guide" class="w-full mt-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-xl text-xs">
-                Đã Hiểu
+                ÄÃ£ Hiá»ƒu
             </button>
         </div>
     </div>
@@ -348,38 +348,38 @@
         // Preset Themes Data
         const PRESETS = {
             animals: {
-                title: "Trò Chơi Lật Ô - Thế Giới Động Vật",
-                topic: "Chủ đề: Động Vật Nhỏ",
+                title: "TrÃ² ChÆ¡i Láº­t Ã” - Tháº¿ Giá»›i Äá»™ng Váº­t",
+                topic: "Chá»§ Ä‘á»: Äá»™ng Váº­t Nhá»",
                 pairs: [
-                    { type: 'icon', value: 'fa-solid fa-cat', label: 'Mèo' },
-                    { type: 'icon', value: 'fa-solid fa-dog', label: 'Chó' },
-                    { type: 'icon', value: 'fa-solid fa-fish', label: 'Cá' },
-                    { type: 'icon', value: 'fa-solid fa-frog', label: 'Ếch' },
-                    { type: 'icon', value: 'fa-solid fa-horse', label: 'Ngựa' },
+                    { type: 'icon', value: 'fa-solid fa-cat', label: 'MÃ¨o' },
+                    { type: 'icon', value: 'fa-solid fa-dog', label: 'ChÃ³' },
+                    { type: 'icon', value: 'fa-solid fa-fish', label: 'CÃ¡' },
+                    { type: 'icon', value: 'fa-solid fa-frog', label: 'áº¾ch' },
+                    { type: 'icon', value: 'fa-solid fa-horse', label: 'Ngá»±a' },
                     { type: 'icon', value: 'fa-solid fa-crow', label: 'Chim' },
-                    { type: 'icon', value: 'fa-solid fa-spider', label: 'Nhện' },
-                    { type: 'icon', value: 'fa-solid fa-hippo', label: 'Hà Mã' },
-                    { type: 'icon', value: 'fa-solid fa-dragon', label: 'Rồng' }
+                    { type: 'icon', value: 'fa-solid fa-spider', label: 'Nhá»‡n' },
+                    { type: 'icon', value: 'fa-solid fa-hippo', label: 'HÃ  MÃ£' },
+                    { type: 'icon', value: 'fa-solid fa-dragon', label: 'Rá»“ng' }
                 ]
             },
             fruits: {
-                title: "Trò Chơi Lật Ô - Hoa Quả Tươi Ngon",
-                topic: "Chủ đề: Trái Cây",
+                title: "TrÃ² ChÆ¡i Láº­t Ã” - Hoa Quáº£ TÆ°Æ¡i Ngon",
+                topic: "Chá»§ Ä‘á»: TrÃ¡i CÃ¢y",
                 pairs: [
-                    { type: 'icon', value: 'fa-solid fa-apple-whole', label: 'Táo' },
+                    { type: 'icon', value: 'fa-solid fa-apple-whole', label: 'TÃ¡o' },
                     { type: 'icon', value: 'fa-solid fa-lemon', label: 'Chanh' },
-                    { type: 'icon', value: 'fa-solid fa-carrot', label: 'Cà rốt' },
-                    { type: 'icon', value: 'fa-solid fa-pepper-hot', label: 'Ớt' },
-                    { type: 'icon', value: 'fa-solid fa-seedling', label: 'Mầm cây' },
-                    { type: 'icon', value: 'fa-solid fa-leaf', label: 'Lá cây' },
-                    { type: 'icon', value: 'fa-solid fa-tree', label: 'Cây xanh' },
-                    { type: 'icon', value: 'fa-solid fa-stroopwafel', label: 'Bánh' },
+                    { type: 'icon', value: 'fa-solid fa-carrot', label: 'CÃ  rá»‘t' },
+                    { type: 'icon', value: 'fa-solid fa-pepper-hot', label: 'á»št' },
+                    { type: 'icon', value: 'fa-solid fa-seedling', label: 'Máº§m cÃ¢y' },
+                    { type: 'icon', value: 'fa-solid fa-leaf', label: 'LÃ¡ cÃ¢y' },
+                    { type: 'icon', value: 'fa-solid fa-tree', label: 'CÃ¢y xanh' },
+                    { type: 'icon', value: 'fa-solid fa-stroopwafel', label: 'BÃ¡nh' },
                     { type: 'icon', value: 'fa-solid fa-ice-cream', label: 'Kem' }
                 ]
             },
             english: {
                 title: "English Vocabulary Matching Game",
-                topic: "Chủ đề: Phương Tiện Giao Thông",
+                topic: "Chá»§ Ä‘á»: PhÆ°Æ¡ng Tiá»‡n Giao ThÃ´ng",
                 pairs: [
                     { type: 'icon', value: 'fa-solid fa-car', label: 'Car' },
                     { type: 'icon', value: 'fa-solid fa-plane', label: 'Plane' },
@@ -393,18 +393,18 @@
                 ]
             },
             numbers: {
-                title: "Lật Ô - Chữ Cái & Con Số",
-                topic: "Chủ đề: Khám Phá Biểu Tượng",
+                title: "Láº­t Ã” - Chá»¯ CÃ¡i & Con Sá»‘",
+                topic: "Chá»§ Ä‘á»: KhÃ¡m PhÃ¡ Biá»ƒu TÆ°á»£ng",
                 pairs: [
-                    { type: 'icon', value: 'fa-solid fa-star', label: 'Ngôi sao' },
-                    { type: 'icon', value: 'fa-solid fa-heart', label: 'Trái tim' },
-                    { type: 'icon', value: 'fa-solid fa-sun', label: 'Mặt trời' },
-                    { type: 'icon', value: 'fa-solid fa-moon', label: 'Mặt trăng' },
-                    { type: 'icon', value: 'fa-solid fa-cloud', label: 'Mây' },
-                    { type: 'icon', value: 'fa-solid fa-bolt', label: 'Tia sét' },
-                    { type: 'icon', value: 'fa-solid fa-snowflake', label: 'Tuyết' },
-                    { type: 'icon', value: 'fa-solid fa-bell', label: 'Chuông' },
-                    { type: 'icon', value: 'fa-solid fa-music', label: 'Âm nhạc' }
+                    { type: 'icon', value: 'fa-solid fa-star', label: 'NgÃ´i sao' },
+                    { type: 'icon', value: 'fa-solid fa-heart', label: 'TrÃ¡i tim' },
+                    { type: 'icon', value: 'fa-solid fa-sun', label: 'Máº·t trá»i' },
+                    { type: 'icon', value: 'fa-solid fa-moon', label: 'Máº·t trÄƒng' },
+                    { type: 'icon', value: 'fa-solid fa-cloud', label: 'MÃ¢y' },
+                    { type: 'icon', value: 'fa-solid fa-bolt', label: 'Tia sÃ©t' },
+                    { type: 'icon', value: 'fa-solid fa-snowflake', label: 'Tuyáº¿t' },
+                    { type: 'icon', value: 'fa-solid fa-bell', label: 'ChuÃ´ng' },
+                    { type: 'icon', value: 'fa-solid fa-music', label: 'Ã‚m nháº¡c' }
                 ]
             }
         };
@@ -498,10 +498,10 @@
         function updateFullscreenUI(active) {
             if (active) {
                 fullscreenIcon.className = 'fa-solid fa-compress text-amber-400';
-                fullscreenText.textContent = 'Thu Nhỏ';
+                fullscreenText.textContent = 'Thu Nhá»';
             } else {
                 fullscreenIcon.className = 'fa-solid fa-expand text-emerald-400';
-                fullscreenText.textContent = 'Toàn Màn Hình';
+                fullscreenText.textContent = 'ToÃ n MÃ n HÃ¬nh';
             }
         }
 
@@ -534,20 +534,20 @@
         }
 
         function updateHeaderInfo() {
-            appTitleEl.textContent = config.title || "Lật Ô Tương Tác";
-            appTopicEl.textContent = config.topic || "Chủ đề bài học";
+            appTitleEl.textContent = config.title || "Láº­t Ã” TÆ°Æ¡ng TÃ¡c";
+            appTopicEl.textContent = config.topic || "Chá»§ Ä‘á» bÃ i há»c";
         }
 
         function setMode(teacherMode) {
             isTeacherMode = teacherMode;
             if (isTeacherMode) {
                 teacherControls.classList.remove('hidden');
-                modeText.textContent = 'Chế độ Học Sinh';
+                modeText.textContent = 'Cháº¿ Ä‘á»™ Há»c Sinh';
                 modeIcon.className = 'fa-solid fa-user-graduate text-emerald-600';
                 btnToggleMode.className = 'px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition text-xs sm:text-sm flex items-center gap-1.5 border border-slate-300';
             } else {
                 teacherControls.classList.add('hidden');
-                modeText.textContent = 'Mở Cấu Hình';
+                modeText.textContent = 'Má»Ÿ Cáº¥u HÃ¬nh';
                 modeIcon.className = 'fa-solid fa-lock text-amber-600';
                 btnToggleMode.className = 'px-3 py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 font-semibold rounded-xl transition text-xs sm:text-sm flex items-center gap-1.5 border border-amber-200';
             }
@@ -602,7 +602,7 @@
                 } else {
                     contentInnerHtml = `
                         <div class="w-full h-full relative flex flex-col items-center justify-center pointer-events-none">
-                            <img src="${card.value}" alt="Pair" class="w-full h-full object-cover rounded-xl" onerror="this.src='https://placehold.co/150x150/e2e8f0/64748b?text=Lỗi+Ảnh'">
+                            <img src="${card.value}" alt="Pair" class="w-full h-full object-cover rounded-xl" onerror="this.src='https://placehold.co/150x150/e2e8f0/64748b?text=Lá»—i+áº¢nh'">
                             ${card.label ? `<span class="absolute bottom-1 bg-black/60 text-white text-[9px] sm:text-[11px] px-2 py-0.5 rounded-md backdrop-blur-sm">${card.label}</span>` : ''}
                         </div>
                     `;
@@ -729,17 +729,17 @@
                     <div class="flex items-center gap-2 border-b border-slate-200/60 pb-1.5">
                         <span class="w-5 h-5 bg-emerald-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center">${idx + 1}</span>
                         ${previewHtml}
-                        <input type="text" value="${pair.label || ''}" placeholder="Nhãn/Tên ô" onchange="updatePairLabel(${idx}, this.value)" class="w-full text-xs border border-slate-300 rounded px-1.5 py-1 focus:outline-none focus:border-emerald-500">
+                        <input type="text" value="${pair.label || ''}" placeholder="NhÃ£n/TÃªn Ã´" onchange="updatePairLabel(${idx}, this.value)" class="w-full text-xs border border-slate-300 rounded px-1.5 py-1 focus:outline-none focus:border-emerald-500">
                     </div>
                     
                     <div class="space-y-1.5">
                         <div>
-                            <label class="text-[10px] font-semibold text-slate-500 block">Dán URL Ảnh:</label>
+                            <label class="text-[10px] font-semibold text-slate-500 block">DÃ¡n URL áº¢nh:</label>
                             <input type="text" value="${pair.type === 'image' ? pair.value : ''}" placeholder="https://..." onchange="updatePairUrl(${idx}, this.value)" class="w-full text-[11px] border border-slate-300 rounded px-1.5 py-1 focus:outline-none focus:border-emerald-500">
                         </div>
                         
                         <div>
-                            <label class="text-[10px] font-semibold text-slate-500 block">Hoặc tải ảnh từ máy:</label>
+                            <label class="text-[10px] font-semibold text-slate-500 block">Hoáº·c táº£i áº£nh tá»« mÃ¡y:</label>
                             <input type="file" accept="image/*" onchange="handlePairFileUpload(${idx}, event)" class="w-full text-[10px] text-slate-500 file:mr-1 file:py-0.5 file:px-2 file:rounded file:border-0 file:bg-emerald-100 file:text-emerald-700 hover:file:bg-emerald-200 cursor-pointer">
                         </div>
                     </div>
@@ -808,7 +808,7 @@
                 passwordModal.classList.add('hidden');
                 setMode(true);
             } else {
-                alert('Mật khẩu không đúng!');
+                alert('Máº­t kháº©u khÃ´ng Ä‘Ãºng!');
             }
         });
 
@@ -822,8 +822,8 @@
         });
 
         btnSaveAdmin.addEventListener('click', () => {
-            config.title = inputAppTitle.value.trim() || "Lật Ô Tương Tác";
-            config.topic = inputAppTopic.value.trim() || "Chủ đề bài học";
+            config.title = inputAppTitle.value.trim() || "Láº­t Ã” TÆ°Æ¡ng TÃ¡c";
+            config.topic = inputAppTopic.value.trim() || "Chá»§ Ä‘á» bÃ i há»c";
             config.password = inputTeacherPassword.value.trim() || "1234";
             
             saveConfigToStorage();
@@ -832,7 +832,7 @@
         });
 
         btnResetDefault.addEventListener('click', () => {
-            if (confirm('Khôi phục về bộ hình Động Vật mặc định?')) {
+            if (confirm('KhÃ´i phá»¥c vá» bá»™ hÃ¬nh Äá»™ng Váº­t máº·c Ä‘á»‹nh?')) {
                 const pwd = config.password;
                 config = JSON.parse(JSON.stringify(PRESETS.animals));
                 config.password = pwd;
@@ -842,7 +842,7 @@
 
         document.getElementById('btn-export-json').addEventListener('click', () => {
             navigator.clipboard.writeText(JSON.stringify(config));
-            alert('Đã sao chép mã JSON!');
+            alert('ÄÃ£ sao chÃ©p mÃ£ JSON!');
         });
 
         document.getElementById('btn-import-json').addEventListener('click', () => {
@@ -851,12 +851,12 @@
                 if (imported && imported.pairs && imported.pairs.length === 9) {
                     config = imported;
                     renderAdminEditors();
-                    alert('Nhập mã cấu hình thành công!');
+                    alert('Nháº­p mÃ£ cáº¥u hÃ¬nh thÃ nh cÃ´ng!');
                 } else {
-                    alert('Mã JSON không hợp lệ! Cần đủ 9 cặp.');
+                    alert('MÃ£ JSON khÃ´ng há»£p lá»‡! Cáº§n Ä‘á»§ 9 cáº·p.');
                 }
             } catch(e) {
-                alert('Mã JSON sai định dạng!');
+                alert('MÃ£ JSON sai Ä‘á»‹nh dáº¡ng!');
             }
         });
 
