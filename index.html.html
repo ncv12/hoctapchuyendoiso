@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <!-- Viewport optimized for iPad touch & no pinch-zoom -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Trò Chơi Lật Ô Tương Tác - Memory Game</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
+            min-height: 100vh;
+            overscroll-behavior-y: none;
+        }
+
+        /* iPad Kiosk Mode Fallback style */
+        body.ipad-kiosk-fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden !important;
+            z-index: 9999;
+        }
+
+        /* 3D Card Flip Effect */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .card.flipped .card-inner,
+        .card.matched .card-inner {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased pb-6 select-none" id="app-body">
+
+    <header class="bg-white/85 backdrop-blur-md sticky top-0 z-30 border-b border-emerald-100 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-2.5 flex items-center justify-between gap-2">
+            
+            <!-- Left Info -->
+            <div class="flex items-center gap-3 shrink-0">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white shadow-md shadow-emerald-200">
+                    <i class="fa-solid fa-puzzle-piece text-xl"></i>
+                </div>
+                <div>
+                    <h1 id="app-title" class="text-sm sm:text-lg font-bold text-slate-800 leading-tight truncate max-w-[160px] sm:max-w-xs">Lật Ô Tương Tác</h1>
+                    <p id="app-topic" class="text-[11px] sm:text-xs text-emerald-600 font-medium truncate max-w-[160px] sm:max-w-xs">Chủ đề: Tự chọn</p>
+                </div>
+            </div>
+            
+            <!-- Controls Area -->
+            <div class="flex items-center gap-2">
+                <!-- Nút TOÀN MÀN HÌNH (Fullscreen Button) -->
+                <button id="btn-fullscreen" class="px-3 py-2 bg-slate-800 hover:bg-slate-900 active:scale-95 text-white font-semibold rounded-xl transition text-xs sm:text-sm flex items-center gap-1.5 shadow-md shadow-slate-300">
+                    <i id="fullscreen-icon" class="fa-solid fa-expand text-emerald-400"></i>
+                    <span id="fullscreen-text" class="hidden sm:inline">Toàn Màn Hình</span>
+                </button>
+
+                <!-- Nút chuyển đổi chế độ Học sinh / Giáo viên -->
+                <button id="btn-toggle-mode" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-semibold rounded-xl transition text-xs sm:text-sm flex items-center gap-1.5 border border-slate-300">
+                    <i id="mode-icon" class="fa-solid fa-user-graduate text-emerald-600"></i>
+                    <span id="mode-text" class="hidden sm:inline">Chế độ Học Sinh</span>
+                </button>
+
+                <!-- Các nút dành riêng cho Giáo viên (Ẩn khi ở Chế độ Học sinh) -->
+                <div id="teacher-controls" class="flex items-center gap-2 transition-all">
+                    <button id="btn-guide" class="px-3 py-2 bg-amber-50 hover:bg-amber-100 active:scale-95 text-amber-700 font-semibold rounded-xl transition text-xs sm:text-sm flex items-center gap-1.5 border border-amber-200">
+                        <i class="fa-solid fa-circle-question"></i>
+                        <span class="hidden md:inline">Up GitHub</span>
+                    </button>
+                    <button id="btn-admin" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold rounded-xl transition text-xs sm:text-sm flex items-center gap-1.5 shadow-sm shadow-emerald-200">
+                        <i class="fa-solid fa-gear"></i>
+                        <span class="hidden md:inline">Cấu Hình</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 pt-4 sm:pt-6">
+        
+        <!-- Dashboard Stats -->
+        <div class="bg-white/90 backdrop-blur rounded-2xl p-3 sm:p-4 shadow-sm border border-slate-100 mb-4 sm:mb-6 grid grid-cols-4 gap-2 sm:gap-4 text-center">
+            <div class="bg-amber-50 border border-amber-100 rounded-xl p-2 sm:p-3">
+                <div class="text-[10px] sm:text-xs font-semibold text-amber-600 uppercase tracking-wider mb-0.5">Điểm Số</div>
+                <div id="score" class="text-xl sm:text-3xl font-extrabold text-amber-700">0</div>
+            </div>
+            <div class="bg-blue-50 border border-blue-100 rounded-xl p-2 sm:p-3">
+                <div class="text-[10px] sm:text-xs font-semibold text-blue-600 uppercase tracking-wider mb-0.5">Lượt Lật</div>
+                <div id="flips" class="text-xl sm:text-3xl font-extrabold text-blue-700">0</div>
+            </div>
+            <div class="bg-purple-50 border border-purple-100 rounded-xl p-2 sm:p-3">
+                <div class="text-[10px] sm:text-xs font-semibold text-purple-600 uppercase tracking-wider mb-0.5">Thời Gian</div>
+                <div id="timer" class="text-xl sm:text-3xl font-extrabold text-purple-700">00:00</div>
+            </div>
+            <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-1.5 sm:p-2.5 flex flex-col justify-center items-center">
+                <button id="btn-restart" class="w-full h-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold rounded-lg sm:rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm text-xs sm:text-sm">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span class="hidden sm:inline">Bàn Mới</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 18 Game Cards Grid (Optimized responsive layout for iPad Gen 6 portrait & landscape) -->
+        <div id="game-board" class="grid grid-cols-3 sm:grid-cols-6 gap-2.5 sm:gap-4 my-auto">
+            <!-- Cards generated dynamically via JS -->
+        </div>
+
+    </main>
+
+    <div id="win-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 text-center shadow-2xl border border-slate-100 transform transition-all scale-95 opacity-0 duration-300" id="win-modal-content">
+            <div class="w-20 h-20 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto text-4xl mb-4 shadow-inner">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+            <h2 class="text-2xl font-extrabold text-slate-800 mb-1">Xuất Sắc! 🎉</h2>
+            <p class="text-slate-600 text-sm mb-6">Em đã ghép đúng tất cả 9 cặp hình!</p>
+
+            <div class="bg-slate-50 rounded-2xl p-4 mb-6 grid grid-cols-2 gap-3 text-left">
+                <div>
+                    <span class="text-xs text-slate-400 block">Tổng số điểm</span>
+                    <span id="final-score" class="text-lg font-bold text-amber-600">0</span>
+                </div>
+                <div>
+                    <span class="text-xs text-slate-400 block">Số lượt lật</span>
+                    <span id="final-flips" class="text-lg font-bold text-blue-600">0</span>
+                </div>
+                <div class="col-span-2 border-t border-slate-200/60 pt-2 mt-1">
+                    <span class="text-xs text-slate-400 block">Thời gian hoàn thành</span>
+                    <span id="final-time" class="text-lg font-bold text-purple-600">00:00</span>
+                </div>
+            </div>
+
+            <button id="btn-win-restart" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-200 transition active:scale-95">
+                Chơi Bàn Mới
+            </button>
+        </div>
+    </div>
+
+    <!-- Password Security Modal -->
+    <div id="password-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-xs w-full p-5 text-center shadow-xl border border-slate-100">
+            <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-xl mb-3">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <h3 class="text-sm font-bold text-slate-800 mb-1">Mật Khẩu Giáo Viên</h3>
+            <p class="text-[11px] text-slate-500 mb-4">Nhập mật khẩu để mở Cấu Hình (Mặc định: <code class="bg-slate-100 px-1 font-bold">1234</code>)</p>
+            
+            <input type="password" id="input-password" class="w-full text-center text-sm border border-slate-300 rounded-xl p-2 mb-3 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="••••">
+            
+            <div class="flex gap-2">
+                <button id="btn-cancel-password" class="w-1/2 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded-xl text-xs">Hủy</button>
+                <button id="btn-confirm-password" class="w-1/2 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-xs">Xác Nhận</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="admin-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-3xl w-full p-5 sm:p-6 max-h-[92vh] flex flex-col shadow-2xl border border-slate-100">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-emerald-600 text-xl"></i>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-800">Cấu Hình Bài Học & 9 Cặp Hình</h3>
+                        <p class="text-xs text-slate-500">Tùy chỉnh tiêu đề, ảnh và thiết lập mật khẩu</p>
+                    </div>
+                </div>
+                <button id="btn-close-admin" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <div class="py-4 overflow-y-auto space-y-5 flex-1 pr-1">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tên Trò Chơi</label>
+                        <input type="text" id="input-app-title" class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="VD: Lật Ô Tìm Từ Vựng">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Chủ Đề Bài Học</label>
+                        <input type="text" id="input-app-topic" class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="VD: Tiếng Anh Unit 1">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Mật Khẩu Mở Cấu Hình</label>
+                        <input type="text" id="input-teacher-password" class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="Mặc định: 1234">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-2">Chủ Đề Mẫu Sẵn Có:</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <button onclick="loadPreset('animals')" class="p-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition">
+                            <i class="fa-solid fa-dog text-emerald-600"></i> Động Vật
+                        </button>
+                        <button onclick="loadPreset('fruits')" class="p-2 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition">
+                            <i class="fa-solid fa-apple-whole text-amber-600"></i> Trái Cây
+                        </button>
+                        <button onclick="loadPreset('english')" class="p-2 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-800 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition">
+                            <i class="fa-solid fa-language text-blue-600"></i> Từ Vựng Anh
+                        </button>
+                        <button onclick="loadPreset('numbers')" class="p-2 bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-800 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition">
+                            <i class="fa-solid fa-arrow-down-1-9 text-purple-600"></i> Chữ & Số
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-bold text-slate-700 mb-3 flex items-center justify-between">
+                        <span>Danh Sách 9 Cặp Hình (18 Ô)</span>
+                        <span class="text-[11px] font-normal text-slate-500">Tải ảnh từ máy (.png, .jpg) hoặc Dán Link URL</span>
+                    </h4>
+
+                    <div id="pair-editors-container" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <!-- 9 Pair Editors generated via JS -->
+                    </div>
+                </div>
+
+                <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200/80">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Mã Cấu Hình JSON (Chia sẻ bài học)</label>
+                    <div class="flex gap-2">
+                        <textarea id="json-code" rows="2" class="w-full text-[11px] font-mono border border-slate-300 rounded-lg p-2 focus:outline-none" placeholder="Dán mã JSON..."></textarea>
+                        <div class="flex flex-col gap-1 shrink-0">
+                            <button id="btn-export-json" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-white text-xs font-medium rounded-lg">Copy Code</button>
+                            <button id="btn-import-json" class="px-3 py-1 bg-teal-600 hover:bg-teal-700 text-white text-xs font-medium rounded-lg">Nhập Code</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 flex justify-between items-center gap-2">
+                <button id="btn-reset-default" class="text-xs text-red-500 hover:text-red-700 font-medium">
+                    <i class="fa-solid fa-rotate-left mr-1"></i>Mặc định
+                </button>
+                <button id="btn-save-admin" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-xs sm:text-sm shadow-md shadow-emerald-200 transition">
+                    <i class="fa-solid fa-check mr-1.5"></i>Lưu & Áp Dụng Bài Học
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- GitHub Guide Modal -->
+    <div id="guide-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-100 max-h-[85vh] overflow-y-auto">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-100 mb-4">
+                <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-brands fa-github text-slate-800 text-xl"></i>
+                    <span>Hướng Dẫn Đăng Lên GitHub Pages</span>
+                </h3>
+                <button id="btn-close-guide" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4 text-xs text-slate-600 leading-relaxed">
+                <div class="flex gap-3 items-start">
+                    <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center shrink-0">1</span>
+                    <div>
+                        <strong class="text-slate-800 block text-sm">Tạo tài khoản GitHub</strong>
+                        Truy cập <a href="https://github.com" target="_blank" class="text-emerald-600 underline font-medium">GitHub.com</a>, đăng ký tài khoản. Chọn **"New repository"**, đặt tên (VD: `game-lat-o`).
+                    </div>
+                </div>
+
+                <div class="flex gap-3 items-start">
+                    <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center shrink-0">2</span>
+                    <div>
+                        <strong class="text-slate-800 block text-sm">Tải file index.html lên</strong>
+                        Lưu file HTML này với tên đúng là <code class="bg-slate-100 px-1.5 py-0.5 rounded text-emerald-700 font-mono">index.html</code>. Chọn **Add file -> Upload files**, kéo thả file vào rồi chọn **Commit changes**.
+                    </div>
+                </div>
+
+                <div class="flex gap-3 items-start">
+                    <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center shrink-0">3</span>
+                    <div>
+                        <strong class="text-slate-800 block text-sm">Bật GitHub Pages</strong>
+                        Vào **Settings** -> **Pages**. Ở mục Branch chọn **main** (hoặc master) rồi chọn **Save**.
+                    </div>
+                </div>
+
+                <div class="flex gap-3 items-start">
+                    <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center shrink-0">4</span>
+                    <div>
+                        <strong class="text-slate-800 block text-sm">Nhận link game</strong>
+                        Sau 1-2 phút, GitHub sẽ xuất link web chơi game chính thức cho iPad và máy tính!
+                    </div>
+                </div>
+            </div>
+
+            <button id="btn-understand-guide" class="w-full mt-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-xl text-xs">
+                Đã Hiểu
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Preset Themes Data
+        const PRESETS = {
+            animals: {
+                title: "Trò Chơi Lật Ô - Thế Giới Động Vật",
+                topic: "Chủ đề: Động Vật Nhỏ",
+                pairs: [
+                    { type: 'icon', value: 'fa-solid fa-cat', label: 'Mèo' },
+                    { type: 'icon', value: 'fa-solid fa-dog', label: 'Chó' },
+                    { type: 'icon', value: 'fa-solid fa-fish', label: 'Cá' },
+                    { type: 'icon', value: 'fa-solid fa-frog', label: 'Ếch' },
+                    { type: 'icon', value: 'fa-solid fa-horse', label: 'Ngựa' },
+                    { type: 'icon', value: 'fa-solid fa-crow', label: 'Chim' },
+                    { type: 'icon', value: 'fa-solid fa-spider', label: 'Nhện' },
+                    { type: 'icon', value: 'fa-solid fa-hippo', label: 'Hà Mã' },
+                    { type: 'icon', value: 'fa-solid fa-dragon', label: 'Rồng' }
+                ]
+            },
+            fruits: {
+                title: "Trò Chơi Lật Ô - Hoa Quả Tươi Ngon",
+                topic: "Chủ đề: Trái Cây",
+                pairs: [
+                    { type: 'icon', value: 'fa-solid fa-apple-whole', label: 'Táo' },
+                    { type: 'icon', value: 'fa-solid fa-lemon', label: 'Chanh' },
+                    { type: 'icon', value: 'fa-solid fa-carrot', label: 'Cà rốt' },
+                    { type: 'icon', value: 'fa-solid fa-pepper-hot', label: 'Ớt' },
+                    { type: 'icon', value: 'fa-solid fa-seedling', label: 'Mầm cây' },
+                    { type: 'icon', value: 'fa-solid fa-leaf', label: 'Lá cây' },
+                    { type: 'icon', value: 'fa-solid fa-tree', label: 'Cây xanh' },
+                    { type: 'icon', value: 'fa-solid fa-stroopwafel', label: 'Bánh' },
+                    { type: 'icon', value: 'fa-solid fa-ice-cream', label: 'Kem' }
+                ]
+            },
+            english: {
+                title: "English Vocabulary Matching Game",
+                topic: "Chủ đề: Phương Tiện Giao Thông",
+                pairs: [
+                    { type: 'icon', value: 'fa-solid fa-car', label: 'Car' },
+                    { type: 'icon', value: 'fa-solid fa-plane', label: 'Plane' },
+                    { type: 'icon', value: 'fa-solid fa-bus', label: 'Bus' },
+                    { type: 'icon', value: 'fa-solid fa-bicycle', label: 'Bicycle' },
+                    { type: 'icon', value: 'fa-solid fa-ship', label: 'Ship' },
+                    { type: 'icon', value: 'fa-solid fa-rocket', label: 'Rocket' },
+                    { type: 'icon', value: 'fa-solid fa-motorcycle', label: 'Motorbike' },
+                    { type: 'icon', value: 'fa-solid fa-truck', label: 'Truck' },
+                    { type: 'icon', value: 'fa-solid fa-helicopter', label: 'Helicopter' }
+                ]
+            },
+            numbers: {
+                title: "Lật Ô - Chữ Cái & Con Số",
+                topic: "Chủ đề: Khám Phá Biểu Tượng",
+                pairs: [
+                    { type: 'icon', value: 'fa-solid fa-star', label: 'Ngôi sao' },
+                    { type: 'icon', value: 'fa-solid fa-heart', label: 'Trái tim' },
+                    { type: 'icon', value: 'fa-solid fa-sun', label: 'Mặt trời' },
+                    { type: 'icon', value: 'fa-solid fa-moon', label: 'Mặt trăng' },
+                    { type: 'icon', value: 'fa-solid fa-cloud', label: 'Mây' },
+                    { type: 'icon', value: 'fa-solid fa-bolt', label: 'Tia sét' },
+                    { type: 'icon', value: 'fa-solid fa-snowflake', label: 'Tuyết' },
+                    { type: 'icon', value: 'fa-solid fa-bell', label: 'Chuông' },
+                    { type: 'icon', value: 'fa-solid fa-music', label: 'Âm nhạc' }
+                ]
+            }
+        };
+
+        // Application State
+        let config = {
+            title: PRESETS.animals.title,
+            topic: PRESETS.animals.topic,
+            password: "1234",
+            pairs: JSON.parse(JSON.stringify(PRESETS.animals.pairs))
+        };
+
+        let isTeacherMode = true;
+        let isKioskFullscreen = false;
+        let cards = [];
+        let flippedCards = [];
+        let matchedCount = 0;
+        let score = 0;
+        let flips = 0;
+        let timer = 0;
+        let timerInterval = null;
+        let isBoardLocked = false;
+
+        // DOM Elements
+        const gameBoard = document.getElementById('game-board');
+        const scoreEl = document.getElementById('score');
+        const flipsEl = document.getElementById('flips');
+        const timerEl = document.getElementById('timer');
+        const appTitleEl = document.getElementById('app-title');
+        const appTopicEl = document.getElementById('app-topic');
+
+        const teacherControls = document.getElementById('teacher-controls');
+        const btnToggleMode = document.getElementById('btn-toggle-mode');
+        const modeIcon = document.getElementById('mode-icon');
+        const modeText = document.getElementById('mode-text');
+
+        // Fullscreen DOM
+        const btnFullscreen = document.getElementById('btn-fullscreen');
+        const fullscreenIcon = document.getElementById('fullscreen-icon');
+        const fullscreenText = document.getElementById('fullscreen-text');
+
+        // Admin Modal DOM
+        const adminModal = document.getElementById('admin-modal');
+        const btnAdmin = document.getElementById('btn-admin');
+        const btnCloseAdmin = document.getElementById('btn-close-admin');
+        const btnSaveAdmin = document.getElementById('btn-save-admin');
+        const btnResetDefault = document.getElementById('btn-reset-default');
+        const inputAppTitle = document.getElementById('input-app-title');
+        const inputAppTopic = document.getElementById('input-app-topic');
+        const inputTeacherPassword = document.getElementById('input-teacher-password');
+        const pairEditorsContainer = document.getElementById('pair-editors-container');
+        const jsonCodeTextarea = document.getElementById('json-code');
+
+        function toggleFullscreen() {
+            const doc = document.documentElement;
+            const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || isKioskFullscreen;
+
+            if (!isFullscreen) {
+                // Standard Fullscreen API
+                if (doc.requestFullscreen) {
+                    doc.requestFullscreen().catch(() => enableIpadKioskMode());
+                } else if (doc.webkitRequestFullscreen) {
+                    // WebKit API (Safari/iPad)
+                    doc.webkitRequestFullscreen().catch(() => enableIpadKioskMode());
+                } else {
+                    enableIpadKioskMode();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen().catch(() => disableIpadKioskMode());
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen().catch(() => disableIpadKioskMode());
+                } else {
+                    disableIpadKioskMode();
+                }
+            }
+        }
+
+        function enableIpadKioskMode() {
+            isKioskFullscreen = true;
+            document.body.classList.add('ipad-kiosk-fullscreen');
+            updateFullscreenUI(true);
+        }
+
+        function disableIpadKioskMode() {
+            isKioskFullscreen = false;
+            document.body.classList.remove('ipad-kiosk-fullscreen');
+            updateFullscreenUI(false);
+        }
+
+        function updateFullscreenUI(active) {
+            if (active) {
+                fullscreenIcon.className = 'fa-solid fa-compress text-amber-400';
+                fullscreenText.textContent = 'Thu Nhỏ';
+            } else {
+                fullscreenIcon.className = 'fa-solid fa-expand text-emerald-400';
+                fullscreenText.textContent = 'Toàn Màn Hình';
+            }
+        }
+
+        // Listen to native fullscreen changes
+        document.addEventListener('fullscreenchange', () => {
+            updateFullscreenUI(!!document.fullscreenElement);
+        });
+        document.addEventListener('webkitfullscreenchange', () => {
+            updateFullscreenUI(!!document.webkitFullscreenElement);
+        });
+
+        btnFullscreen.addEventListener('click', toggleFullscreen);
+
+        function loadSavedConfig() {
+            const saved = localStorage.getItem('memory_game_teacher_config');
+            if (saved) {
+                try {
+                    config = JSON.parse(saved);
+                    if (!config.password) config.password = "1234";
+                } catch(e) {
+                    console.error("Localstorage config error", e);
+                }
+            }
+            updateHeaderInfo();
+        }
+
+        function saveConfigToStorage() {
+            localStorage.setItem('memory_game_teacher_config', JSON.stringify(config));
+            updateHeaderInfo();
+        }
+
+        function updateHeaderInfo() {
+            appTitleEl.textContent = config.title || "Lật Ô Tương Tác";
+            appTopicEl.textContent = config.topic || "Chủ đề bài học";
+        }
+
+        function setMode(teacherMode) {
+            isTeacherMode = teacherMode;
+            if (isTeacherMode) {
+                teacherControls.classList.remove('hidden');
+                modeText.textContent = 'Chế độ Học Sinh';
+                modeIcon.className = 'fa-solid fa-user-graduate text-emerald-600';
+                btnToggleMode.className = 'px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition text-xs sm:text-sm flex items-center gap-1.5 border border-slate-300';
+            } else {
+                teacherControls.classList.add('hidden');
+                modeText.textContent = 'Mở Cấu Hình';
+                modeIcon.className = 'fa-solid fa-lock text-amber-600';
+                btnToggleMode.className = 'px-3 py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 font-semibold rounded-xl transition text-xs sm:text-sm flex items-center gap-1.5 border border-amber-200';
+            }
+        }
+
+        function initGame() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timer = 0;
+            score = 0;
+            flips = 0;
+            matchedCount = 0;
+            flippedCards = [];
+            isBoardLocked = false;
+
+            scoreEl.textContent = '0';
+            flipsEl.textContent = '0';
+            timerEl.textContent = '00:00';
+
+            // Duplicate 9 pairs into 18 card objects
+            cards = [];
+            config.pairs.forEach((pair, pairIndex) => {
+                cards.push({ pairId: pairIndex, ...pair });
+                cards.push({ pairId: pairIndex, ...pair });
+            });
+
+            // Shuffle cards
+            for (let i = cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cards[i], cards[j]] = [cards[j], cards[i]];
+            }
+
+            renderBoard();
+        }
+
+        function renderBoard() {
+            gameBoard.innerHTML = '';
+            
+            cards.forEach((card, index) => {
+                const cardEl = document.createElement('div');
+                cardEl.className = 'card perspective-1000 aspect-square cursor-pointer select-none';
+                cardEl.dataset.index = index;
+
+                let contentInnerHtml = '';
+                if (card.type === 'icon') {
+                    contentInnerHtml = `
+                        <div class="flex flex-col items-center justify-center p-1 pointer-events-none">
+                            <i class="${card.value} text-3xl sm:text-5xl text-emerald-600 mb-1"></i>
+                            <span class="text-[10px] sm:text-xs font-semibold text-slate-600 max-w-full truncate">${card.label || ''}</span>
+                        </div>
+                    `;
+                } else {
+                    contentInnerHtml = `
+                        <div class="w-full h-full relative flex flex-col items-center justify-center pointer-events-none">
+                            <img src="${card.value}" alt="Pair" class="w-full h-full object-cover rounded-xl" onerror="this.src='https://placehold.co/150x150/e2e8f0/64748b?text=Lỗi+Ảnh'">
+                            ${card.label ? `<span class="absolute bottom-1 bg-black/60 text-white text-[9px] sm:text-[11px] px-2 py-0.5 rounded-md backdrop-blur-sm">${card.label}</span>` : ''}
+                        </div>
+                    `;
+                }
+
+                cardEl.innerHTML = `
+                    <div class="card-inner">
+                        <!-- Front Face -->
+                        <div class="card-front bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-md border-2 border-white/40 active:scale-95 transition">
+                            <i class="fa-solid fa-question text-2xl sm:text-4xl opacity-80"></i>
+                        </div>
+                        <!-- Back Face -->
+                        <div class="card-back bg-white border-2 border-emerald-400 shadow-md">
+                            ${contentInnerHtml}
+                        </div>
+                    </div>
+                `;
+
+                // Touch & click event optimized for iPad
+                cardEl.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    handleCardClick(cardEl, index);
+                });
+
+                gameBoard.appendChild(cardEl);
+            });
+        }
+
+        function startTimer() {
+            if (!timerInterval) {
+                timerInterval = setInterval(() => {
+                    timer++;
+                    const m = String(Math.floor(timer / 60)).padStart(2, '0');
+                    const s = String(timer % 60).padStart(2, '0');
+                    timerEl.textContent = `${m}:${s}`;
+                }, 1000);
+            }
+        }
+
+        function handleCardClick(cardEl, index) {
+            if (isBoardLocked) return;
+            if (cardEl.classList.contains('flipped') || cardEl.classList.contains('matched')) return;
+
+            startTimer();
+
+            cardEl.classList.add('flipped');
+            flippedCards.push({ element: cardEl, index: index, pairId: cards[index].pairId });
+
+            if (flippedCards.length === 2) {
+                flips++;
+                flipsEl.textContent = flips;
+                checkPairMatch();
+            }
+        }
+
+        function checkPairMatch() {
+            isBoardLocked = true;
+            const [c1, c2] = flippedCards;
+
+            if (c1.pairId === c2.pairId) {
+                c1.element.classList.add('matched');
+                c2.element.classList.add('matched');
+
+                score += 10;
+                scoreEl.textContent = score;
+                matchedCount++;
+
+                flippedCards = [];
+                isBoardLocked = false;
+
+                if (matchedCount === 9) {
+                    setTimeout(triggerWinSequence, 400);
+                }
+            } else {
+                setTimeout(() => {
+                    c1.element.classList.remove('flipped');
+                    c2.element.classList.remove('flipped');
+                    flippedCards = [];
+                    isBoardLocked = false;
+                }, 850);
+            }
+        }
+
+        function triggerWinSequence() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+
+            document.getElementById('final-score').textContent = score;
+            document.getElementById('final-flips').textContent = flips;
+            document.getElementById('final-time').textContent = timerEl.textContent;
+
+            const winModal = document.getElementById('win-modal');
+            const winModalContent = document.getElementById('win-modal-content');
+
+            winModal.classList.remove('hidden');
+            setTimeout(() => {
+                winModalContent.classList.remove('scale-95', 'opacity-0');
+                winModalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+
+            if (typeof confetti === 'function') {
+                confetti({ particleCount: 130, spread: 90, origin: { y: 0.6 } });
+            }
+        }
+
+        function renderAdminEditors() {
+            inputAppTitle.value = config.title || '';
+            inputAppTopic.value = config.topic || '';
+            inputTeacherPassword.value = config.password || '1234';
+            pairEditorsContainer.innerHTML = '';
+
+            config.pairs.forEach((pair, idx) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex flex-col gap-2 relative';
+
+                let previewHtml = '';
+                if (pair.type === 'icon') {
+                    previewHtml = `<div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0"><i class="${pair.value} text-lg"></i></div>`;
+                } else {
+                    previewHtml = `<img src="${pair.value}" class="w-10 h-10 object-cover rounded-lg border border-slate-200 shrink-0">`;
+                }
+
+                itemDiv.innerHTML = `
+                    <div class="flex items-center gap-2 border-b border-slate-200/60 pb-1.5">
+                        <span class="w-5 h-5 bg-emerald-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center">${idx + 1}</span>
+                        ${previewHtml}
+                        <input type="text" value="${pair.label || ''}" placeholder="Nhãn/Tên ô" onchange="updatePairLabel(${idx}, this.value)" class="w-full text-xs border border-slate-300 rounded px-1.5 py-1 focus:outline-none focus:border-emerald-500">
+                    </div>
+                    
+                    <div class="space-y-1.5">
+                        <div>
+                            <label class="text-[10px] font-semibold text-slate-500 block">Dán URL Ảnh:</label>
+                            <input type="text" value="${pair.type === 'image' ? pair.value : ''}" placeholder="https://..." onchange="updatePairUrl(${idx}, this.value)" class="w-full text-[11px] border border-slate-300 rounded px-1.5 py-1 focus:outline-none focus:border-emerald-500">
+                        </div>
+                        
+                        <div>
+                            <label class="text-[10px] font-semibold text-slate-500 block">Hoặc tải ảnh từ máy:</label>
+                            <input type="file" accept="image/*" onchange="handlePairFileUpload(${idx}, event)" class="w-full text-[10px] text-slate-500 file:mr-1 file:py-0.5 file:px-2 file:rounded file:border-0 file:bg-emerald-100 file:text-emerald-700 hover:file:bg-emerald-200 cursor-pointer">
+                        </div>
+                    </div>
+                `;
+                pairEditorsContainer.appendChild(itemDiv);
+            });
+
+            jsonCodeTextarea.value = JSON.stringify(config, null, 2);
+        }
+
+        window.updatePairLabel = function(index, label) {
+            config.pairs[index].label = label;
+            jsonCodeTextarea.value = JSON.stringify(config, null, 2);
+        };
+
+        window.updatePairUrl = function(index, url) {
+            if (url.trim()) {
+                config.pairs[index].type = 'image';
+                config.pairs[index].value = url.trim();
+                renderAdminEditors();
+            }
+        };
+
+        window.handlePairFileUpload = function(index, event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    config.pairs[index].type = 'image';
+                    config.pairs[index].value = e.target.result;
+                    renderAdminEditors();
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        window.loadPreset = function(presetKey) {
+            if (PRESETS[presetKey]) {
+                const pwd = config.password;
+                config = JSON.parse(JSON.stringify(PRESETS[presetKey]));
+                config.password = pwd;
+                renderAdminEditors();
+            }
+        };
+
+        // Password & Mode Management
+        const passwordModal = document.getElementById('password-modal');
+        const inputPassword = document.getElementById('input-password');
+
+        btnToggleMode.addEventListener('click', () => {
+            if (isTeacherMode) {
+                setMode(false);
+            } else {
+                inputPassword.value = '';
+                passwordModal.classList.remove('hidden');
+                setTimeout(() => inputPassword.focus(), 100);
+            }
+        });
+
+        document.getElementById('btn-cancel-password').addEventListener('click', () => {
+            passwordModal.classList.add('hidden');
+        });
+
+        document.getElementById('btn-confirm-password').addEventListener('click', () => {
+            if (inputPassword.value === (config.password || '1234')) {
+                passwordModal.classList.add('hidden');
+                setMode(true);
+            } else {
+                alert('Mật khẩu không đúng!');
+            }
+        });
+
+        btnAdmin.addEventListener('click', () => {
+            renderAdminEditors();
+            adminModal.classList.remove('hidden');
+        });
+
+        btnCloseAdmin.addEventListener('click', () => {
+            adminModal.classList.add('hidden');
+        });
+
+        btnSaveAdmin.addEventListener('click', () => {
+            config.title = inputAppTitle.value.trim() || "Lật Ô Tương Tác";
+            config.topic = inputAppTopic.value.trim() || "Chủ đề bài học";
+            config.password = inputTeacherPassword.value.trim() || "1234";
+            
+            saveConfigToStorage();
+            adminModal.classList.add('hidden');
+            initGame();
+        });
+
+        btnResetDefault.addEventListener('click', () => {
+            if (confirm('Khôi phục về bộ hình Động Vật mặc định?')) {
+                const pwd = config.password;
+                config = JSON.parse(JSON.stringify(PRESETS.animals));
+                config.password = pwd;
+                renderAdminEditors();
+            }
+        });
+
+        document.getElementById('btn-export-json').addEventListener('click', () => {
+            navigator.clipboard.writeText(JSON.stringify(config));
+            alert('Đã sao chép mã JSON!');
+        });
+
+        document.getElementById('btn-import-json').addEventListener('click', () => {
+            try {
+                const imported = JSON.parse(jsonCodeTextarea.value);
+                if (imported && imported.pairs && imported.pairs.length === 9) {
+                    config = imported;
+                    renderAdminEditors();
+                    alert('Nhập mã cấu hình thành công!');
+                } else {
+                    alert('Mã JSON không hợp lệ! Cần đủ 9 cặp.');
+                }
+            } catch(e) {
+                alert('Mã JSON sai định dạng!');
+            }
+        });
+
+        document.getElementById('btn-restart').addEventListener('click', initGame);
+        
+        document.getElementById('btn-win-restart').addEventListener('click', () => {
+            document.getElementById('win-modal').classList.add('hidden');
+            initGame();
+        });
+
+        // Guide Modal Listeners
+        const guideModal = document.getElementById('guide-modal');
+        document.getElementById('btn-guide').addEventListener('click', () => guideModal.classList.remove('hidden'));
+        document.getElementById('btn-close-guide').addEventListener('click', () => guideModal.classList.add('hidden'));
+        document.getElementById('btn-understand-guide').addEventListener('click', () => guideModal.classList.add('hidden'));
+
+        // Prevent double-tap zoom on iOS iPad
+        document.addEventListener('touchend', (e) => {
+            const now = Date.now();
+            if (window.lastTouchEnd && now - window.lastTouchEnd <= 300) {
+                e.preventDefault();
+            }
+            window.lastTouchEnd = now;
+        }, false);
+
+        // App Initialization
+        window.onload = function() {
+            loadSavedConfig();
+            initGame();
+        };
+    </script>
+</body>
+</html>
